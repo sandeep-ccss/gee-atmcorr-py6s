@@ -31,22 +31,23 @@ def BOA(mission,image,bandname):
 
     # Solar zenith angle:
     solar_z = mn.solar_z(image,mission)
+    
+     # Get the centroid coordinates of the image:
+    imgGeometry = image.geometry().buffer(10)
+    imgCentroid = imgGeometry.centroid()
+    coord = imgCentroid.getInfo()['coordinates'] #point only
 
     # Target altitude:
     ####Uncomment the next three lines if want to do AC to images over land.####
     SRTM = ee.Image('CGIAR/SRTM90_V4')# Shuttle Radar Topography mission covers *most* of the Earth
-    alt = SRTM.reduceRegion(reducer = ee.Reducer.mean(),geometry = image.centroid()).get('elevation').getInfo()
+    alt = SRTM.reduceRegion(reducer = ee.Reducer.mean(),geometry = imgCentroid).get('elevation').getInfo()
     km = alt/1000 # i.e. Py6S uses units of kilometers
     #km = 0.001 #Set to 1m due to we are only interested in coastal water, not inland objects.
 
     # Date used for the Atmospheric correction functions, in GEE format:
     ee_date = ee.Date(image.get('system:time_start'))
 
-    # Get the centroid coordinates of the image:
-    imgGeometry = image.geometry().buffer(10)
-    imgCentroid = imgGeometry.centroid()
-    coord = imgCentroid.getInfo()['coordinates'] #point only
-
+   
     # Predefined atmospheric constituents:
     h2o = Atmospheric.water(imgCentroid,ee_date).getInfo()   #Water\
     o3 = Atmospheric.ozone(imgCentroid,ee_date).getInfo()    #Ozone\
