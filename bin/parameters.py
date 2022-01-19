@@ -35,7 +35,7 @@ def BOA(mission,image,bandname):
     # Target altitude:
     ####Uncomment the next three lines if want to do AC to images over land.####
     SRTM = ee.Image('CGIAR/SRTM90_V4')# Shuttle Radar Topography mission covers *most* of the Earth
-    alt = SRTM.reduceRegion(reducer = ee.Reducer.mean(),geometry = imgCentroid).get('elevation').getInfo()
+    alt = SRTM.reduceRegion(reducer = ee.Reducer.mean(),geometry = image.centroid()).get('elevation').getInfo()
     km = alt/1000 # i.e. Py6S uses units of kilometers
     #km = 0.001 #Set to 1m due to we are only interested in coastal water, not inland objects.
 
